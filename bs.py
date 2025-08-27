@@ -43,20 +43,20 @@ def pnl_explain(S, r, K, T, sigma, opt, dS_frac=0.01, dSigma_pts=1.0, dt_days=1)
     days_in_year = 252
     dt = dt_days / days_in_year
 
-    # état initial
+    # initial state
     V0 = price(S, r, K, T, sigma, opt)
     g = greeks(S, r, K, T, sigma, opt)
 
-    # nouvel état (spot, vol, temps)
+    # new state
     S1 = S * (1 + dS_frac)
     sigma1 = sigma + dSigma_pts/100
     T1 = max(1e-8, T - dt)
     V1 = price(S1, r, K, T1, sigma1, opt)
 
-    # P&L exact
+    # exact P&L 
     pnl_exact = V1 - V0
 
-    # P&L approx via greeks
+    # P&L approx with greeks
     dS = S * dS_frac
     approx = (g["delta"]*dS
               + 0.5*g["gamma"]*(dS**2)
@@ -64,3 +64,4 @@ def pnl_explain(S, r, K, T, sigma, opt, dS_frac=0.01, dSigma_pts=1.0, dt_days=1)
               + g["theta"]*dt)
 
     return {"pnl_exact": pnl_exact, "pnl_approx": approx, "start": V0, "end": V1, "S1": S1, "sigma1": sigma1, "T1": T1}
+
